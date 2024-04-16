@@ -11,9 +11,6 @@
     <Setting Name="隧道名称" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="本地端口" Type="System.UInt16" Scope="User">
-      <Value Profile="(Default)">0</Value>
-    </Setting>
     <Setting Name="TCP地址" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
