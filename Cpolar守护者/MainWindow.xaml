@@ -9,27 +9,31 @@
     <Grid x:Name="主框架" HorizontalAlignment="Left" VerticalAlignment="Top">
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
-            <ColumnDefinition Width="200"/>
+            <ColumnDefinition Width="700"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition/>
-            <RowDefinition/>
-            <RowDefinition/>
-            <RowDefinition/>
-            <RowDefinition/>
-            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <TextBlock Text="Email" Grid.Column="0" Grid.Row="0"/>
         <TextBox x:Name="Email" Grid.Column="1" Grid.Row="0"/>
-        <TextBlock Text="密码" Grid.Column="0" Grid.Row="1"/>
-        <PasswordBox x:Name="密码" Grid.Column="1" Grid.Row="1" InputScope="Password"/>
-        <TextBlock Text="隧道名称" Grid.Column="0" Grid.Row="2"/>
-        <TextBox x:Name="隧道名称" Grid.Column="1" Grid.Row="2"/>
-        <TextBlock Text="TCP地址" Grid.Column="0" Grid.Row="3"/>
-        <TextBox x:Name="TCP地址" Grid.Column="1" Grid.Row="3" InputScope="Url"/>
-        <Button x:Name="切换守护" Grid.Column="0" Grid.Row="4" Content="开始守护"/>
-        <Button x:Name="查看日志" Grid.Column="1" Grid.Row="4" Content="查看日志"/>
-        <TextBlock Text="状态" Grid.Column="0" Grid.Row="5"/>
-        <TextBlock x:Name="状态" Text="正常" Grid.Column="1" Grid.Row="5"/>
+        <TextBlock Text="Cpolar密码" Grid.Column="0" Grid.Row="1"/>
+        <PasswordBox x:Name="Cpolar密码" Grid.Column="1" Grid.Row="1" InputScope="Password"/>
+        <TextBlock Text="Windows密码" Grid.Column="0" Grid.Row="2"/>
+        <PasswordBox x:Name="Windows密码" Grid.Column="1" Grid.Row="2" InputScope="Password"/>
+        <TextBlock Text="隧道名称" Grid.Column="0" Grid.Row="3"/>
+        <TextBox x:Name="隧道名称" Grid.Column="1" Grid.Row="3"/>
+        <TextBlock Text="TCP地址" Grid.Column="0" Grid.Row="4"/>
+        <TextBox x:Name="TCP地址" Grid.Column="1" Grid.Row="4" InputScope="Url"/>
+        <Button x:Name="查看日志" Grid.Column="0" Grid.Row="5" Content="查看日志"/>
+        <Button x:Name="切换守护" Grid.Column="1" Grid.Row="5" Content="开始守护"/>
+        <TextBlock Text="状态" Grid.Column="0" Grid.Row="6"/>
+        <TextBox x:Name="状态" Text="正常" Grid.Column="1" Grid.Row="6" IsReadOnly="True"/>
     </Grid>
 </Window>

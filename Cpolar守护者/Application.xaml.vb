@@ -35,7 +35,7 @@ Class Application
 	Shared ReadOnly HTTP客户端 As New HttpClient
 	ReadOnly 隧道获取 As New HttpRequestMessage(HttpMethod.Get, "http://localhost:9200/api/v1/tunnels")
 	ReadOnly 隧道发送请求 As New HttpRequestMessage(HttpMethod.Post, "http://localhost:9200/api/v1/tunnels")
-	ReadOnly 定时器 As New Threading.Timer(AddressOf 守护检查)
+	Friend ReadOnly 定时器 As New Timer(AddressOf 守护检查)
 	Property 上次是starting As Boolean
 	Property 上次定时 As TimeSpan = TimeSpan.FromMinutes(5)
 	Structure 登录数据
@@ -78,9 +78,14 @@ Class Application
 	End Class
 	Async Sub 守护检查()
 		Try
-			服务控制器.Start()
+			Select Case 服务控制器.Status
+				Case ServiceControllerStatus.Paused, ServiceControllerStatus.PausePending
+					服务控制器.Continue()
+				Case ServiceControllerStatus.Stopped, ServiceControllerStatus.StopPending
+					服务控制器.Start()
+			End Select
 			服务控制器.WaitForStatus(ServiceControllerStatus.Running, TimeSpan.FromMinutes(1))
-			Dim 授权 As New Headers.AuthenticationHeaderValue("Bearer", (Await (Await HTTP客户端.PostAsJsonAsync("http://localhost:9200/api/v1/user/login", New With {.email = My.Settings.Email, .password = My.Settings.密码})).Content.ReadFromJsonAsync(Of 登录内容)).data.token)
+			Dim 授权 As New Headers.AuthenticationHeaderValue("Bearer", (Await (Await HTTP客户端.PostAsJsonAsync("http://localhost:9200/api/v1/user/login", New With {My.Settings.Email, My.Settings.Cpolar密码})).Content.ReadFromJsonAsync(Of 登录内容)).data.token)
 			隧道获取.Headers.Authorization = 授权
 			上次是starting = False
 			For Each item In (Await HTTP客户端.Send(隧道获取).Content.ReadFromJsonAsync(Of 隧道获取内容)).data.items
@@ -156,7 +161,8 @@ Class Application
 		If Command() = "自启动" Then
 			守护检查()
 		Else
-			Call (New MainWindow).Show()
+			当前窗口 = New MainWindow
+			当前窗口.Show()
 		End If
 	End Sub
 End Class

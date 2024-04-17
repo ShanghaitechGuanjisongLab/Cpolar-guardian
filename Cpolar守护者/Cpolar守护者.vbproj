@@ -6,7 +6,13 @@
 	<RootNamespace>Cpolar守护者</RootNamespace>
 	<UseWPF>true</UseWPF>
 	  <SupportedOSPlatformVersion>10.0.19041.0</SupportedOSPlatformVersion>
+	  <ApplicationIcon>Icon0.ico</ApplicationIcon>
+	  <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="Icon0.ico" />
+  </ItemGroup>
 
   <ItemGroup>
 	<Import Include="System.Windows" />

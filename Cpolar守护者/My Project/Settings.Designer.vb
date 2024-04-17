@@ -69,12 +69,12 @@ Namespace My
         <Global.System.Configuration.UserScopedSettingAttribute(),  _
          Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.Configuration.DefaultSettingValueAttribute("")>  _
-        Public Property 密码() As String
+        Public Property Cpolar密码() As String
             Get
-                Return CType(Me("密码"),String)
+                Return CType(Me("Cpolar密码"),String)
             End Get
             Set
-                Me("密码") = value
+                Me("Cpolar密码") = value
             End Set
         End Property
         
@@ -111,6 +111,18 @@ Namespace My
             End Get
             Set
                 Me("守护中") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("")>  _
+        Public Property Windows密码() As String
+            Get
+                Return CType(Me("Windows密码"),String)
+            End Get
+            Set
+                Me("Windows密码") = value
             End Set
         End Property
     End Class
