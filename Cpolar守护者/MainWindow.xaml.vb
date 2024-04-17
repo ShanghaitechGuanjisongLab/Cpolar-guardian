@@ -1,31 +1,10 @@
-﻿Imports System.IO
-Imports System.Security.Cryptography
-Imports System.Text
-Imports Microsoft.Win32.TaskScheduler
+﻿Imports Microsoft.Win32.TaskScheduler
 Imports System.Runtime.InteropServices
 Imports System.Threading
 Imports log4net.Appender
+Imports System.ComponentModel
 Class MainWindow
 	Shared ReadOnly Current As Application = System.Windows.Application.Current
-	Shared ReadOnly AES As Aes = Function() As Aes
-									 Dim AES As Aes = Aes.Create
-									 AES.Key = SHA256.HashData(Encoding.UTF8.GetBytes("Cpolar守护者"))
-									 Return AES
-								 End Function()
-
-	Shared Function 对称加密(明文 As String) As String
-		AES.GenerateIV()
-		Dim 内存流 As New MemoryStream
-		内存流.Write(AES.IV, 0, AES.IV.Length)
-		Call New StreamWriter(New CryptoStream(内存流, AES.CreateEncryptor(), CryptoStreamMode.Write)).Write(明文)
-		Return Convert.ToBase64String(内存流.ToArray)
-	End Function
-
-	Shared Function 对称解密(密文 As String) As String
-		Static 初始化向量长度 As Integer = AES.BlockSize / 8 - 1
-		Dim 密文字节 As Byte() = Convert.FromBase64String(密文)
-		Return If(密文字节.Length > 初始化向量长度, New StreamReader(New CryptoStream(New MemoryStream(密文字节, 初始化向量长度, 密文字节.Length - 初始化向量长度, False), AES.CreateDecryptor(AES.Key, 密文字节.Take(初始化向量长度).ToArray), CryptoStreamMode.Read)).ReadToEnd, "")
-	End Function
 	Private Sub MainWindow_Loaded(sender As Object, e As RoutedEventArgs) Handles Me.Loaded
 		Width = 主框架.ActualWidth + 20
 		Height = 主框架.ActualHeight + 40
@@ -39,7 +18,7 @@ Class MainWindow
 		End With
 		状态.Text = Current.状态
 	End Sub
-	Private Sub MainWindow_Closing() Handles Me.Closing
+	Private Sub 保存设置() Handles Me.Closing
 		With My.Settings
 			.Email = Email.Text
 			.Cpolar密码 = 对称加密(Cpolar密码.Password)
@@ -47,22 +26,28 @@ Class MainWindow
 			.隧道名称 = 隧道名称.Text
 			.TCP地址 = TCP地址.Text
 		End With
+		My.Settings.Save()
 	End Sub
-	Private Sub 切换守护_Click(sender As Object, e As RoutedEventArgs) Handles 切换守护.Click
+
+	Const 任务名称 As String = "Cpolar守护任务"
+	Shared 计划任务 As Task = TaskService.Instance.GetTask(任务名称)
+	Shared ReadOnly 任务文件夹 As TaskFolder = TaskService.Instance.GetFolder("\")
+
+	Private Async Sub 切换守护_Click(sender As Object, e As RoutedEventArgs) Handles 切换守护.Click
 		Try
-			Static 任务服务 As TaskService = TaskService.Instance
-			Const 任务名称 As String = "Cpolar守护任务"
-			Static 计划任务 As Task = 任务服务.GetTask(任务名称)
 			If My.Settings.守护中 Then
 				Current.定时器.Change(Timeout.Infinite, Timeout.Infinite)
 				If 计划任务 IsNot Nothing Then
 					计划任务.Enabled = False
 				End If
+				My.Settings.守护中 = False
+				切换守护.Content = "开始守护"
 			Else
-				Current.守护检查()
+				保存设置()
+				Await Current.守护检查()
 				If 计划任务 Is Nothing Then
 					'触发器是一次性的，必须先克隆再使用
-					计划任务 = 任务服务.AddTask(任务名称, New BootTrigger, New ExecAction(Environment.ProcessPath, "自启动"))
+					计划任务 = TaskService.Instance.AddTask(任务名称, New BootTrigger, New ExecAction(Environment.ProcessPath, "自启动"))
 					With 计划任务.Definition.Settings
 						.StartWhenAvailable = True
 						.DisallowStartIfOnBatteries = False
@@ -78,12 +63,12 @@ Class MainWindow
 						.Id = "Author"
 						.RunLevel = TaskRunLevel.Highest
 						.UserId = Environment.UserName
-						Static 任务文件夹 As TaskFolder = 任务服务.GetFolder("\")
-						任务文件夹.RegisterTaskDefinition(任务名称, 计划任务.Definition, TaskCreation.CreateOrUpdate, Environment.UserName, Windows密码.Password, TaskLogonType.Password)
 					End With
+					任务文件夹.RegisterTaskDefinition(任务名称, 计划任务.Definition, TaskCreation.CreateOrUpdate, Environment.UserName, Windows密码.Password, TaskLogonType.Password)
 				End If
 				计划任务.Enabled = True
 				My.Settings.守护中 = True
+				切换守护.Content = "停止守护"
 			End If
 		Catch ex As Exception
 			Current.日志异常(ex)
