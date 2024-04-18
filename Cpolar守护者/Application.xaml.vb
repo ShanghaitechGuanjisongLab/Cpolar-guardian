@@ -108,7 +108,7 @@ Class Application
 					日志消息("检测到Cpolar服务未运行，尝试启动……")
 			End Select
 			服务控制器.WaitForStatus(ServiceControllerStatus.Running, TimeSpan.FromMinutes(1))
-			Dim 授权 As New Headers.AuthenticationHeaderValue("Bearer", (Await (Await HTTP客户端.PostAsJsonAsync("http://localhost:9200/api/v1/user/login", New With {My.Settings.Email, .password = 对称解密(My.Settings.Cpolar密码)})).Content.ReadFromJsonAsync(Of 登录内容)).data.token)
+			Dim 授权 As New Headers.AuthenticationHeaderValue("Bearer", (Await (Await HTTP客户端.PostAsJsonAsync("http://localhost:9200/api/v1/user/login", New With {.email = My.Settings.Email, .password = 对称解密(My.Settings.Cpolar密码)})).Content.ReadFromJsonAsync(Of 登录内容)).data.token)
 			'HTTP请求是一次性对象，发送后就无法复用
 			Dim 隧道获取 As New HttpRequestMessage(HttpMethod.Get, "http://localhost:9200/api/v1/tunnels")
 			隧道获取.Headers.Authorization = 授权
@@ -169,25 +169,15 @@ Class Application
 			后台守护()
 		Else
 			If 当前窗口 Is Nothing Then
-				Dispatcher.Invoke(Sub() Call (New MainWindow).Show())
+				Dispatcher.Invoke(Sub()
+									  当前窗口 = New MainWindow
+									  当前窗口.Show()
+								  End Sub)
 			Else
 				Dispatcher.Invoke(AddressOf 当前窗口.Activate)
 			End If
 		End If
 		命名管道服务器流.Disconnect()
-		命名管道服务器流.BeginWaitForConnection(AddressOf 管道回调, Nothing)
-	End Sub
-
-	Sub New()
-		Try
-			命名管道服务器流 = New NamedPipeServerStream("Cpolar守护者", PipeDirection.In, 1, PipeTransmissionMode.Message, PipeOptions.Asynchronous Or PipeOptions.CurrentUserOnly)
-		Catch ex As IOException
-			Dim 命名管道客户端流 As New NamedPipeClientStream(".", "Cpolar守护者", PipeDirection.Out)
-			命名管道客户端流.Connect(1000)
-			Call New BinaryWriter(命名管道客户端流).Write(Command() = "自启动")
-			Shutdown()
-			Exit Sub
-		End Try
 		命名管道服务器流.BeginWaitForConnection(AddressOf 管道回调, Nothing)
 	End Sub
 
@@ -198,6 +188,16 @@ Class Application
 		End If
 	End Sub
 	Private Sub Application_Startup(sender As Object, e As StartupEventArgs) Handles Me.Startup
+		Try
+			命名管道服务器流 = New NamedPipeServerStream("Cpolar守护者", PipeDirection.In, 1, PipeTransmissionMode.Message, PipeOptions.Asynchronous Or PipeOptions.CurrentUserOnly)
+		Catch ex As IOException
+			Dim 命名管道客户端流 As New NamedPipeClientStream(".", "Cpolar守护者", PipeDirection.Out)
+			命名管道客户端流.Connect(1000)
+			Call New BinaryWriter(命名管道客户端流).Write(Command() = "自启动")
+			Shutdown()
+			Exit Sub
+		End Try
+		命名管道服务器流.BeginWaitForConnection(AddressOf 管道回调, Nothing)
 		If My.Settings.守护中 Then
 			后台守护()
 		End If
