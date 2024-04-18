@@ -1,0 +1,5 @@
+﻿<Project Sdk="WixToolset.Sdk/5.0.0">
+  <ItemGroup>
+    <ProjectReference Include="..\Cpolar守护服务\Cpolar守护服务.csproj" />
+  </ItemGroup>
+</Project>
