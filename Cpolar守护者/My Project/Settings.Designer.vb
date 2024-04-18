@@ -113,18 +113,6 @@ Namespace My
                 Me("守护中") = value
             End Set
         End Property
-        
-        <Global.System.Configuration.UserScopedSettingAttribute(),  _
-         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
-         Global.System.Configuration.DefaultSettingValueAttribute("")>  _
-        Public Property Windows密码() As String
-            Get
-                Return CType(Me("Windows密码"),String)
-            End Get
-            Set
-                Me("Windows密码") = value
-            End Set
-        End Property
     End Class
 End Namespace
 

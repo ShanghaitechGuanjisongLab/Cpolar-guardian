@@ -11,18 +11,16 @@ Class MainWindow
 		With My.Settings
 			Email.Text = .Email
 			Cpolar密码.Password = 对称解密(.Cpolar密码)
-			Windows密码.Password = 对称解密(.Windows密码)
 			隧道名称.Text = .隧道名称
 			TCP地址.Text = .TCP地址
 			切换守护.Content = If(.守护中, "停止守护", "开始守护")
 		End With
-		状态.Text = Current.状态
+		状态.Text = Current.上次日志
 	End Sub
 	Private Sub 保存设置() Handles Me.Closing
 		With My.Settings
 			.Email = Email.Text
 			.Cpolar密码 = 对称加密(Cpolar密码.Password)
-			.Windows密码 = 对称加密(Windows密码.Password)
 			.隧道名称 = 隧道名称.Text
 			.TCP地址 = TCP地址.Text
 		End With
@@ -31,7 +29,6 @@ Class MainWindow
 
 	Const 任务名称 As String = "Cpolar守护任务"
 	Shared 计划任务 As Task = TaskService.Instance.GetTask(任务名称)
-	Shared ReadOnly 任务文件夹 As TaskFolder = TaskService.Instance.GetFolder("\")
 
 	Private Async Sub 切换守护_Click(sender As Object, e As RoutedEventArgs) Handles 切换守护.Click
 		Try
@@ -54,17 +51,14 @@ Class MainWindow
 						.StopIfGoingOnBatteries = False
 						.IdleSettings.StopOnIdleEnd = False
 						.ExecutionTimeLimit = TimeSpan.Zero
-						.RunOnlyIfLoggedOn = False
 						.RestartInterval = TimeSpan.FromMinutes(5)
 						.RestartCount = 300
 					End With
 					With 计划任务.Definition.Principal
-						.LogonType = TaskLogonType.Password
-						.Id = "Author"
 						.RunLevel = TaskRunLevel.Highest
-						.UserId = Environment.UserName
+						.UserId = "SYSTEM"
 					End With
-					任务文件夹.RegisterTaskDefinition(任务名称, 计划任务.Definition, TaskCreation.CreateOrUpdate, Environment.UserName, Windows密码.Password, TaskLogonType.Password)
+					计划任务.RegisterChanges()
 				End If
 				计划任务.Enabled = True
 				My.Settings.守护中 = True

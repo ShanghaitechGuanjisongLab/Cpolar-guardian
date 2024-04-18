@@ -3,23 +3,52 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34728.123
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "Cpolar守护者", "Cpolar守护者\Cpolar守护者.vbproj", "{B3DD8399-BD25-438E-8381-A85BFA7BB839}"
+Project("{778DAE3C-4631-46EA-AA77-85C1314464D9}") = "Cpolar守护者", "Cpolar守护者\Cpolar守护者.vbproj", "{B3DD8399-BD25-438E-8381-A85BFA7BB839}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E3FEBB2C-9AE5-4236-96E7-261B9D8740F7}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "解决方案项", "解决方案项", "{F303E8AE-8939-4A00-8D39-3E6653B5F73D}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
+		Debug|ARM = Debug|ARM
+		Debug|ARM64 = Debug|ARM64
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
 		Release|Any CPU = Release|Any CPU
+		Release|ARM = Release|ARM
+		Release|ARM64 = Release|ARM64
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{B3DD8399-BD25-438E-8381-A85BFA7BB839}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B3DD8399-BD25-438E-8381-A85BFA7BB839}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B3DD8399-BD25-438E-8381-A85BFA7BB839}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{B3DD8399-BD25-438E-8381-A85BFA7BB839}.Debug|ARM.Build.0 = Debug|Any CPU
+		{B3DD8399-BD25-438E-8381-A85BFA7BB839}.Debug|ARM64.ActiveCfg = Debug|Any CPU
+		{B3DD8399-BD25-438E-8381-A85BFA7BB839}.Debug|ARM64.Build.0 = Debug|Any CPU
+		{B3DD8399-BD25-438E-8381-A85BFA7BB839}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{B3DD8399-BD25-438E-8381-A85BFA7BB839}.Debug|x64.Build.0 = Debug|Any CPU
+		{B3DD8399-BD25-438E-8381-A85BFA7BB839}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B3DD8399-BD25-438E-8381-A85BFA7BB839}.Debug|x86.Build.0 = Debug|Any CPU
 		{B3DD8399-BD25-438E-8381-A85BFA7BB839}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B3DD8399-BD25-438E-8381-A85BFA7BB839}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B3DD8399-BD25-438E-8381-A85BFA7BB839}.Release|ARM.ActiveCfg = Release|Any CPU
+		{B3DD8399-BD25-438E-8381-A85BFA7BB839}.Release|ARM.Build.0 = Release|Any CPU
+		{B3DD8399-BD25-438E-8381-A85BFA7BB839}.Release|ARM64.ActiveCfg = Release|Any CPU
+		{B3DD8399-BD25-438E-8381-A85BFA7BB839}.Release|ARM64.Build.0 = Release|Any CPU
+		{B3DD8399-BD25-438E-8381-A85BFA7BB839}.Release|x64.ActiveCfg = Release|Any CPU
+		{B3DD8399-BD25-438E-8381-A85BFA7BB839}.Release|x64.Build.0 = Release|Any CPU
+		{B3DD8399-BD25-438E-8381-A85BFA7BB839}.Release|x86.ActiveCfg = Release|Any CPU
+		{B3DD8399-BD25-438E-8381-A85BFA7BB839}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

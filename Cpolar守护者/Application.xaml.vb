@@ -11,7 +11,6 @@ Class Application
 
 	' Application-level events, such as Startup, Exit, and DispatcherUnhandledException
 	' can be handled in this file.
-	Friend 状态 As String = "正常"
 	Friend WithEvents 当前窗口 As MainWindow
 	Private 命名管道服务器流 As NamedPipeServerStream
 
@@ -19,22 +18,25 @@ Class Application
 											   log4net.Config.XmlConfigurator.Configure()
 											   Return log4net.LogManager.GetLogger("Application")
 										   End Function)()
+	Property 上次日志 As String = ""
 	Sub 日志消息(消息 As String)
+		上次日志 = 消息
 		If 当前窗口 IsNot Nothing Then
-			Dispatcher.Invoke(Sub() 当前窗口.状态.Text = 消息)
+			Dispatcher.Invoke(Sub() 当前窗口.状态.Text = 上次日志)
 		End If
 		日志流.Info(消息)
 	End Sub
 	Sub 日志异常(异常 As Exception, Optional 消息 As String = "")
+		上次日志 = $"{消息} {异常.GetType} {异常.Message}"
 		If 当前窗口 IsNot Nothing Then
-			Dispatcher.Invoke(Sub() 当前窗口.状态.Text = $"{消息} {异常.GetType} {异常.Message}")
+			Dispatcher.Invoke(Sub() 当前窗口.状态.Text = 上次日志)
 		End If
 		日志流.Error(消息, 异常)
 	End Sub
 
 	Shared ReadOnly 服务控制器 As New ServiceController("cpolar")
 	Shared ReadOnly HTTP客户端 As New HttpClient
-	Shared ReadOnly 最小周期 As TimeSpan = TimeSpan.FromMinutes(5)
+	Shared ReadOnly 最小周期 As TimeSpan = TimeSpan.FromSeconds(30)
 	Friend ReadOnly 定时器 As New Timer(AddressOf 后台守护)
 	Property 上次是starting As Boolean
 	Property 上次定时 As TimeSpan = 最小周期
@@ -96,11 +98,14 @@ Class Application
 			Throw New Cpolar异常("设置的TCP地址为空")
 		End If
 		Try
+			服务控制器.Refresh()
 			Select Case 服务控制器.Status
 				Case ServiceControllerStatus.Paused, ServiceControllerStatus.PausePending
 					服务控制器.Continue()
+					日志消息("检测到Cpolar服务未运行，尝试启动……")
 				Case ServiceControllerStatus.Stopped, ServiceControllerStatus.StopPending
 					服务控制器.Start()
+					日志消息("检测到Cpolar服务未运行，尝试启动……")
 			End Select
 			服务控制器.WaitForStatus(ServiceControllerStatus.Running, TimeSpan.FromMinutes(1))
 			Dim 授权 As New Headers.AuthenticationHeaderValue("Bearer", (Await (Await HTTP客户端.PostAsJsonAsync("http://localhost:9200/api/v1/user/login", New With {My.Settings.Email, .password = 对称解密(My.Settings.Cpolar密码)})).Content.ReadFromJsonAsync(Of 登录内容)).data.token)
@@ -148,7 +153,7 @@ Class Application
 布置下次任务:
 			定时器.Change(上次定时, 上次定时)
 		Catch ex As JsonException
-			Throw New Cpolar异常("登录失败，请检查Email和Cpolar密码", ex)
+			Throw New Cpolar异常("登录失败，请检查网络连接、Email和Cpolar密码", ex)
 		End Try
 	End Function
 	Async Sub 后台守护()
@@ -193,9 +198,10 @@ Class Application
 		End If
 	End Sub
 	Private Sub Application_Startup(sender As Object, e As StartupEventArgs) Handles Me.Startup
-		If Command() = "自启动" Then
+		If My.Settings.守护中 Then
 			后台守护()
-		Else
+		End If
+		If Command() <> "自启动" Then
 			当前窗口 = New MainWindow
 			当前窗口.Show()
 		End If
