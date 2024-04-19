@@ -7,7 +7,20 @@
     <UserSecretsId>dotnet-Cpolar守护服务-358b1c3e-3111-482d-9696-38b55d078b09</UserSecretsId>
     <SupportedOSPlatformVersion>10.0.19041.0</SupportedOSPlatformVersion>
     <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>Icon0.ico</ApplicationIcon>
   </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <IsTrimmable>False</IsTrimmable>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <IsTrimmable>False</IsTrimmable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="Icon0.ico" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />

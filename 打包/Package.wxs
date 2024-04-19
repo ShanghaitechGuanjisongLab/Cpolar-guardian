@@ -11,7 +11,8 @@
 			 Manufacturer="$(Manufacturer)"
 			 Version="$(Version)"
 			 UpgradeCode="$(var.UpgradeCode)"
-			 Compressed="true">
+			 Compressed="true"
+			 Scope="perMachine">
 
 		<!-- Allow upgrades and prevent downgrades -->
 		<MajorUpgrade DowngradeErrorMessage="A later version of [ProductName] is already installed. Setup will now exit." />
@@ -23,45 +24,33 @@
 			<Directory Id="ROOTDIRECTORY" Name="$(var.Manufacturer)">
 
 				<!-- Create a folder within the parent folder given the name -->
-				<Directory Id="INSTALLFOLDER" Name="$(Name)" />
+				<Directory Id="INSTALLFOLDER" Name="$(Name)">
+
+					<!-- Create a single component which is the App.WindowsService.exe file -->
+					<Component Id="ServiceExecutable" Bitness="always64">
+
+						<!-- Copies the App.WindowsService.exe file using the
+					 project reference preprocessor variables -->
+						<File Id="Cpolar_guardian"
+							  Source="$(sys.CURRENTDIR)..\Cpolar守护服务\发布\Cpolar守护服务.exe"
+							  KeyPath="true" />
+
+						<!-- Remove all files from the INSTALLFOLDER on uninstall -->
+						<RemoveFile Id="ALLFILES" Name="*.*" On="both" />
+
+						<!-- Tell WiX to install the Service -->
+						<ServiceInstall Id="ServiceInstaller"
+										Type="ownProcess"
+										Name="Cpolar守护服务"
+										DisplayName="$(Name)"
+										Description="Cpolar守护服务"
+										Start="demand"
+										ErrorControl="normal"
+										Account=".\LocalSystem"/>
+					</Component>
+				</Directory>
 			</Directory>
 		</StandardDirectory>
-
-		<!-- The files inside this DirectoryRef are linked to
-			 the App.WindowsService directory via INSTALLFOLDER -->
-		<DirectoryRef Id="INSTALLFOLDER">
-
-			<!-- Create a single component which is the App.WindowsService.exe file -->
-			<Component Id="ServiceExecutable" Bitness="always64">
-
-				<!-- Copies the App.WindowsService.exe file using the
-					 project reference preprocessor variables -->
-				<File Id="Cpolar_guardian"
-					  Source="$(sys.CURRENTDIR)..\Cpolar守护服务\发布\Cpolar守护服务.exe"
-					  KeyPath="true" />
-
-				<!-- Remove all files from the INSTALLFOLDER on uninstall -->
-				<RemoveFile Id="ALLFILES" Name="*.*" On="both" />
-
-				<!-- Tell WiX to install the Service -->
-				<ServiceInstall Id="ServiceInstaller"
-								Type="ownProcess"
-								Name="Cpolar守护服务"
-								DisplayName="$(Name)"
-								Description="Cpolar守护服务"
-								Start="demand"
-								ErrorControl="normal"
-								Account=".\SYSTEM"/>
-
-				<!-- Tell WiX to start the Service -->
-				<ServiceControl Id="StartService"
-								Start="install"
-								Stop="both"
-								Remove="uninstall"
-								Name="Cpolar守护服务"
-								Wait="true" />
-			</Component>
-		</DirectoryRef>
 
 		<!-- Tell WiX to install the files -->
 		<Feature Id="Service" Title="Cpolar守护服务安装器" Level="1">

@@ -53,66 +53,6 @@ Namespace My
                 Return defaultInstance
             End Get
         End Property
-        
-        <Global.System.Configuration.UserScopedSettingAttribute(),  _
-         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
-         Global.System.Configuration.DefaultSettingValueAttribute("")>  _
-        Public Property Email() As String
-            Get
-                Return CType(Me("Email"),String)
-            End Get
-            Set
-                Me("Email") = value
-            End Set
-        End Property
-        
-        <Global.System.Configuration.UserScopedSettingAttribute(),  _
-         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
-         Global.System.Configuration.DefaultSettingValueAttribute("")>  _
-        Public Property Cpolar密码() As String
-            Get
-                Return CType(Me("Cpolar密码"),String)
-            End Get
-            Set
-                Me("Cpolar密码") = value
-            End Set
-        End Property
-        
-        <Global.System.Configuration.UserScopedSettingAttribute(),  _
-         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
-         Global.System.Configuration.DefaultSettingValueAttribute("")>  _
-        Public Property 隧道名称() As String
-            Get
-                Return CType(Me("隧道名称"),String)
-            End Get
-            Set
-                Me("隧道名称") = value
-            End Set
-        End Property
-        
-        <Global.System.Configuration.UserScopedSettingAttribute(),  _
-         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
-         Global.System.Configuration.DefaultSettingValueAttribute("")>  _
-        Public Property TCP地址() As String
-            Get
-                Return CType(Me("TCP地址"),String)
-            End Get
-            Set
-                Me("TCP地址") = value
-            End Set
-        End Property
-        
-        <Global.System.Configuration.UserScopedSettingAttribute(),  _
-         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
-         Global.System.Configuration.DefaultSettingValueAttribute("False")>  _
-        Public Property 守护中() As Boolean
-            Get
-                Return CType(Me("守护中"),Boolean)
-            End Get
-            Set
-                Me("守护中") = value
-            End Set
-        End Property
     End Class
 End Namespace
 

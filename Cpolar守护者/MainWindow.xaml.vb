@@ -1,84 +1,61 @@
-﻿Imports Microsoft.Win32.TaskScheduler
-Imports System.Runtime.InteropServices
+﻿Imports System.Runtime.InteropServices
 Imports System.Threading
-Imports log4net.Appender
-Imports System.ComponentModel
+Imports Microsoft.Win32
+Imports System.ServiceProcess
+Imports System.Windows.Threading
 Class MainWindow
-	Shared ReadOnly Current As Application = System.Windows.Application.Current
+	Shared ReadOnly 服务控制器 As New ServiceController("Cpolar守护服务")
+	Shared Function 服务运行中() As Boolean
+		Select Case 服务控制器.Status
+			Case ServiceControllerStatus.ContinuePending, ServiceControllerStatus.Running, ServiceControllerStatus.StartPending
+				Return True
+			Case ServiceControllerStatus.Paused, ServiceControllerStatus.PausePending, ServiceControllerStatus.Stopped, ServiceControllerStatus.StopPending
+				Return False
+		End Select
+	End Function
 	Private Sub MainWindow_Loaded(sender As Object, e As RoutedEventArgs) Handles Me.Loaded
 		Width = 主框架.ActualWidth + 20
 		Height = 主框架.ActualHeight + 40
-		With My.Settings
-			Email.Text = .Email
-			Cpolar密码.Password = 对称解密(.Cpolar密码)
-			隧道名称.Text = .隧道名称
-			TCP地址.Text = .TCP地址
-			切换守护.Content = If(.守护中, "停止守护", "开始守护")
+		With Registry.LocalMachine.CreateSubKey("SOFTWARE\埃博拉酱\Cpolar守护服务")
+			Email.Text = .GetValue("Email")
+			Cpolar密码.Password = 对称解密(.GetValue("Cpolar密码"))
+			隧道名称.Text = .GetValue("隧道名称")
+			TCP地址.Text = .GetValue("TCP地址")
+			状态.Text = .GetValue("状态")
 		End With
-		状态.Text = Current.上次日志
+		切换守护.Content = If(服务运行中(), "停止守护", "开始守护")
 	End Sub
 	Private Sub 保存设置() Handles Me.Closing
-		With My.Settings
-			.Email = Email.Text
-			.Cpolar密码 = 对称加密(Cpolar密码.Password)
-			.隧道名称 = 隧道名称.Text
-			.TCP地址 = TCP地址.Text
+		With Registry.LocalMachine.CreateSubKey("SOFTWARE\埃博拉酱\Cpolar守护服务")
+			.SetValue("Email", Email.Text)
+			.SetValue("Cpolar密码", 对称加密(Cpolar密码.Password))
+			.SetValue("隧道名称", 隧道名称.Text)
+			.SetValue("TCP地址", TCP地址.Text)
 		End With
-		My.Settings.Save()
 	End Sub
-
-	Const 任务名称 As String = "Cpolar守护任务"
-	Shared 计划任务 As Task = TaskService.Instance.GetTask(任务名称)
-
-	Private Async Sub 切换守护_Click(sender As Object, e As RoutedEventArgs) Handles 切换守护.Click
-		Try
-			If My.Settings.守护中 Then
-				Current.定时器.Change(Timeout.Infinite, Timeout.Infinite)
-				If 计划任务 IsNot Nothing Then
-					计划任务.Enabled = False
-				End If
-				My.Settings.守护中 = False
-				切换守护.Content = "开始守护"
-			Else
-				保存设置()
-				Await Current.守护检查()
-				If 计划任务 Is Nothing Then
-					'触发器是一次性的，必须先克隆再使用
-					计划任务 = TaskService.Instance.AddTask(任务名称, New BootTrigger, New ExecAction(Environment.ProcessPath, "自启动"))
-					With 计划任务.Definition.Settings
-						.StartWhenAvailable = True
-						.DisallowStartIfOnBatteries = False
-						.StopIfGoingOnBatteries = False
-						.IdleSettings.StopOnIdleEnd = False
-						.ExecutionTimeLimit = TimeSpan.Zero
-						.RestartInterval = TimeSpan.FromMinutes(5)
-						.RestartCount = 300
-					End With
-					With 计划任务.Definition.Principal
-						.RunLevel = TaskRunLevel.Highest
-						.UserId = "SYSTEM"
-					End With
-					计划任务.RegisterChanges()
-				End If
-				计划任务.Enabled = True
-				My.Settings.守护中 = True
-				切换守护.Content = "停止守护"
-			End If
-		Catch ex As Exception
-			Current.日志异常(ex)
-		End Try
-	End Sub
-	<DllImport("shell32.dll", CharSet:=CharSet.Unicode)>
-	Private Shared Function ShellExecute(
-		hwnd As IntPtr,
-		lpOperation As String,
-		lpFile As String,
-		lpParameters As String,
-		lpDirectory As String,
-		nShowCmd As Integer) As IntPtr
-	End Function
-	Private Sub 查看日志_Click(sender As Object, e As RoutedEventArgs) Handles 查看日志.Click
-		Static 日志路径 As String = DirectCast(Current.日志流.Logger.Repository.GetAppenders.Single, FileAppender).File
-		ShellExecute(IntPtr.Zero, "open", 日志路径, "", "", 1)
+	Private Sub 切换守护_Click(sender As Object, e As RoutedEventArgs) Handles 切换守护.Click
+		切换守护.IsEnabled = False
+		Task.Run(Sub()
+					 Try
+						 If 服务运行中() Then
+							 服务控制器.Stop()
+							 Dispatcher.Invoke(Sub() 切换守护.Content = "服务停止中……")
+							 服务控制器.WaitForStatus(ServiceControllerStatus.Stopped, TimeSpan.FromMinutes(1))
+							 Dispatcher.Invoke(Sub() 切换守护.Content = "开始守护")
+						 Else
+							 服务控制器.Start()
+							 Dispatcher.Invoke(Sub() 切换守护.Content = "服务启动中……")
+							 服务控制器.WaitForStatus(ServiceControllerStatus.Running, TimeSpan.FromMinutes(1))
+							 Dispatcher.Invoke(Sub() 切换守护.Content = "停止守护")
+						 End If
+					 Catch ex As Exception
+						 Dispatcher.Invoke(Sub() 状态.Text = $"{ex.GetType} {ex.Message}")
+					 End Try
+					 服务控制器.Refresh()
+					 Dispatcher.Invoke(Sub()
+										   切换守护.IsEnabled = True
+										   切换守护.Content = If(服务运行中(), "停止守护", "开始守护")
+									   End Sub)
+				 End Sub)
 	End Sub
 End Class
