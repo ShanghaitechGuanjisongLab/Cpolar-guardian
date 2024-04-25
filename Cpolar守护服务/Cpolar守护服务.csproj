@@ -8,8 +8,8 @@
     <SupportedOSPlatformVersion>10.0.19041.0</SupportedOSPlatformVersion>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationIcon>Icon0.ico</ApplicationIcon>
-    <PublishAot>True</PublishAot>
-    <PublishTrimmed>True</PublishTrimmed>
+    <PublishAot>False</PublishAot>
+    <PublishTrimmed>False</PublishTrimmed>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

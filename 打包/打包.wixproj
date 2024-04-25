@@ -8,7 +8,4 @@
   <ItemGroup>
     <ProjectReference Include="..\Cpolar守护服务\Cpolar守护服务.csproj" />
   </ItemGroup>
-  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="heat dir $(SolutionDir)Cpolar守护服务\bin\$(ConfigurationName)\net8.0-windows10.0.22621.0 -cg Cpolar守护服务 -dr INSTALLFOLDER -var var.SourceDir -scom -sreg -sfrag -srd -out $(ProjectDir)服务.wxs" />
-  </Target>
 </Project>

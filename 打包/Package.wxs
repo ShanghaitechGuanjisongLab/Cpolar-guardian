@@ -15,7 +15,7 @@
 			 Scope="perMachine">
 
 		<!-- Allow upgrades and prevent downgrades -->
-		<MajorUpgrade DowngradeErrorMessage="A later version of [ProductName] is already installed. Setup will now exit." />
+		<MajorUpgrade DowngradeErrorMessage="已经安装了更高版本的[ProductName]。安装程序现在将退出。" />
 
 		<!-- Define the directory structure -->
 		<StandardDirectory Id="ProgramFiles64Folder">
@@ -27,16 +27,18 @@
 				<Directory Id="INSTALLFOLDER" Name="$(Name)">
 
 					<!-- Create a single component which is the App.WindowsService.exe file -->
-					<Component Id="ServiceExecutable" Bitness="always64">
+					<Component Id="ServiceExecutable" Bitness="always64" Guid="cf8e05cb-fb13-fb8d-699e-581a70ce28b5">
 
 						<!-- Copies the App.WindowsService.exe file using the
 					 project reference preprocessor variables -->
-						<File Id="Cpolar_guardian"
-							  Source="$(sys.CURRENTDIR)..\Cpolar守护服务\发布\Cpolar守护服务.exe"
-							  KeyPath="true" />
+						<File Source="$(sys.CURRENTDIR)..\Cpolar守护服务\发布\Cpolar守护服务.exe"
+							  KeyPath="yes" />
+						<File Id="UserInterface"
+							  Source="$(sys.CURRENTDIR)..\Cpolar守护者\发布\Cpolar守护者.exe"
+							  KeyPath="no" />						
 
 						<!-- Remove all files from the INSTALLFOLDER on uninstall -->
-						<RemoveFile Id="ALLFILES" Name="*.*" On="both" />
+						<RemoveFile Name="*.*" On="uninstall" />
 
 						<!-- Tell WiX to install the Service -->
 						<ServiceInstall Id="ServiceInstaller"
@@ -44,17 +46,23 @@
 										Name="Cpolar守护服务"
 										DisplayName="$(Name)"
 										Description="Cpolar守护服务"
-										Start="demand"
+										Start="disabled"
 										ErrorControl="normal"
 										Account=".\LocalSystem"/>
 					</Component>
 				</Directory>
 			</Directory>
 		</StandardDirectory>
-
+		<StandardDirectory Id="ProgramMenuFolder">
+			<Component Id="UIShortcut" Guid="c4a0ffa9-bb9c-4c54-7d46-7b264e65f227">
+				<Shortcut Name="Cpolar守护者" Target="[UserInterface]" WorkingDirectory="INSTALLFOLDER"/>
+				<RemoveFile Name="Cpolar守护者.lnk" On="uninstall"/>
+			</Component>
+		</StandardDirectory>
 		<!-- Tell WiX to install the files -->
-		<Feature Id="Service" Title="Cpolar守护服务安装器" Level="1">
+		<Feature Id="Service" Title="Cpolar守护者" Level="1">
 			<ComponentRef Id="ServiceExecutable" />
+			<ComponentRef Id="UIShortcut"/>
 		</Feature>
 
 	</Package>
