@@ -6,6 +6,9 @@
     <BindFiles>true</BindFiles>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="Icon0.ico" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\Cpolar守护服务\Cpolar守护服务.csproj" />
   </ItemGroup>
 </Project>

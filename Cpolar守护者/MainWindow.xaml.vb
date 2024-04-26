@@ -44,8 +44,8 @@ Class MainWindow
 							 注册表键.SetValue("Start", ServiceStartMode.Disabled)
 							 服务控制器.WaitForStatus(ServiceControllerStatus.Stopped, TimeSpan.FromMinutes(1))
 						 Else
-							 服务控制器.Start()
 							 注册表键.SetValue("Start", ServiceStartMode.Automatic)
+							 服务控制器.Start()
 							 服务控制器.WaitForStatus(ServiceControllerStatus.Running, TimeSpan.FromMinutes(1))
 						 End If
 					 Catch ex As Exception
