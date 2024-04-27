@@ -41,7 +41,7 @@ Class MainWindow
 					 Try
 						 If 服务运行中() Then
 							 服务控制器.Stop()
-							 注册表键.SetValue("Start", ServiceStartMode.Disabled)
+							 注册表键.SetValue("Start", ServiceStartMode.Manual)
 							 服务控制器.WaitForStatus(ServiceControllerStatus.Stopped, TimeSpan.FromMinutes(1))
 						 Else
 							 注册表键.SetValue("Start", ServiceStartMode.Automatic)
