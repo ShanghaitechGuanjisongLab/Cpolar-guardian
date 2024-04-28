@@ -23,7 +23,7 @@ Class MainWindow
 			TCP地址.Text = .GetValue("TCP地址")
 			状态.Text = .GetValue("状态")
 		End With
-		切换守护.Content = If(服务运行中(), "停止守护", "开始守护")
+		停止守护.IsEnabled = 服务运行中()
 	End Sub
 	Private Sub 保存设置() Handles Me.Closing
 		With 注册表键
@@ -33,35 +33,47 @@ Class MainWindow
 			.SetValue("TCP地址", TCP地址.Text)
 		End With
 	End Sub
-	Private Sub 切换守护_Click(sender As Object, e As RoutedEventArgs) Handles 切换守护.Click
-		切换守护.IsEnabled = False
-		切换守护.Content = If(服务运行中(), "服务停止中……"， "服务启动中……")
-		保存设置()
-		Task.Run(Sub()
-					 Try
-						 If 服务运行中() Then
-							 服务控制器.Stop()
-							 注册表键.SetValue("Start", ServiceStartMode.Manual)
-							 服务控制器.WaitForStatus(ServiceControllerStatus.Stopped, TimeSpan.FromMinutes(1))
-						 Else
-							 注册表键.SetValue("Start", ServiceStartMode.Automatic)
-							 服务控制器.Start()
-							 服务控制器.WaitForStatus(ServiceControllerStatus.Running, TimeSpan.FromMinutes(1))
-						 End If
-					 Catch ex As Exception
-						 Dispatcher.Invoke(Sub() 状态.Text = $"{ex.GetType} {ex.Message}")
-					 End Try
-					 服务控制器.Refresh()
-					 Dispatcher.Invoke(Sub()
-										   切换守护.IsEnabled = True
-										   切换守护.Content = If(服务运行中(), "停止守护", "开始守护")
-									   End Sub)
-				 End Sub)
-	End Sub
 
 	Private Sub 事件日志_EntryWritten(sender As Object, e As EntryWrittenEventArgs) Handles 事件日志.EntryWritten
 		If e.Entry.InstanceId = 1 Then
-			状态.Text = e.Entry.Message
+			Dispatcher.Invoke(Sub() 状态.Text = e.Entry.Message)
 		End If
+	End Sub
+
+	Private Sub 开始守护_Click(sender As Object, e As RoutedEventArgs) Handles 开始守护.Click
+		保存设置()
+		Try
+			服务控制器.Stop()
+		Catch
+		End Try
+		Try
+			服务控制器.WaitForStatus(ServiceControllerStatus.Stopped, TimeSpan.FromMinutes(1))
+		Catch ex As Exception
+			Dispatcher.Invoke(Sub() 状态.Text = $"{ex.GetType} {ex.Message}")
+		End Try
+		注册表键.SetValue("Start", ServiceStartMode.Automatic)
+		Try
+			服务控制器.Start()
+		Catch
+		End Try
+		Try
+			服务控制器.WaitForStatus(ServiceControllerStatus.Running, TimeSpan.FromMinutes(1))
+		Catch ex As Exception
+			Dispatcher.Invoke(Sub() 状态.Text = $"{ex.GetType} {ex.Message}")
+		End Try
+		服务控制器.Refresh()
+		停止守护.IsEnabled = 服务运行中()
+	End Sub
+
+	Private Sub 停止守护_Click(sender As Object, e As RoutedEventArgs) Handles 停止守护.Click
+		Try
+			注册表键.SetValue("Start", ServiceStartMode.Manual)
+			服务控制器.Stop()
+			服务控制器.WaitForStatus(ServiceControllerStatus.Stopped, TimeSpan.FromMinutes(1))
+		Catch ex As Exception
+			Dispatcher.Invoke(Sub() 状态.Text = $"{ex.GetType} {ex.Message}")
+		End Try
+		服务控制器.Refresh()
+		停止守护.IsEnabled = 服务运行中()
 	End Sub
 End Class

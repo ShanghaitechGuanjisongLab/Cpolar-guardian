@@ -3,7 +3,7 @@
 <!-- Define the variables in "$(var.*) expressions" -->
 <?define Name = "Cpolar守护者" ?>
 <?define Manufacturer = "埃博拉酱" ?>
-<?define Version = "1.0.3" ?>
+<?define Version = "1.0.0" ?>
 <?define UpgradeCode = "cc9051b6-9aa6-46f8-94fc-bd4e9bdd586a" ?>
 
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
