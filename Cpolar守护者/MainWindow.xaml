@@ -6,7 +6,7 @@
 		xmlns:local="clr-namespace:Cpolar守护者"
 		mc:Ignorable="d"
 		Title="Cpolar守护者">
-    <Grid x:Name="主框架" HorizontalAlignment="Left" VerticalAlignment="Top" Height="200">
+    <Grid x:Name="主框架" HorizontalAlignment="Left" VerticalAlignment="Top" Height="300">
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
             <ColumnDefinition Width="300"/>

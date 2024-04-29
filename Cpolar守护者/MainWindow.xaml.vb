@@ -1,5 +1,6 @@
 ﻿Imports Microsoft.Win32
 Imports System.ServiceProcess
+Imports System.Windows.Interop
 Imports System.Windows.Threading
 Class MainWindow
 	Shared ReadOnly 服务控制器 As New ServiceController("Cpolar守护服务")
@@ -24,6 +25,11 @@ Class MainWindow
 			状态.Text = .GetValue("状态")
 		End With
 		停止守护.IsEnabled = 服务运行中()
+		Dim windowHandle As IntPtr = New WindowInteropHelper(Me).Handle
+		' 尝试获取当前窗口的输入法上下文
+		If ImmGetContext(windowHandle) = IntPtr.Zero Then
+			状态.Text = "获取输入法上下文失败"
+		End If
 	End Sub
 	Private Sub 保存设置() Handles Me.Closing
 		With 注册表键

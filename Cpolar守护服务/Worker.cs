@@ -65,9 +65,6 @@ namespace Cpolar守护服务
 		};
 		class Cpolar异常(string 消息, Exception? 内部异常 = null) : Exception(消息, 内部异常);
 		TimeSpan 上次定时 = 最小周期;
-		void 新建隧道(string? 隧道名称, string? TCP地址, AuthenticationHeaderValue 授权)
-		{
-		}
 		async Task 守护检查()
 		{
 			string? TCP地址 = (string?)注册表键.GetValue("TCP地址");
@@ -95,13 +92,13 @@ namespace Cpolar守护服务
 					["email"] = JsonValue.Create((string?)注册表键.GetValue("Email")),
 					["password"] = 对称解密((byte[])注册表键.GetValue("Cpolar密码"))
 				}.ToJsonString(), JSON类型))).Content.ReadAsStream())["data"]["token"].GetValue<string>());
-				HttpRequestMessage 隧道获取 = new(HttpMethod.Get, "http://localhost:9200/api/v1/tunnels");
-				隧道获取.Headers.Authorization = 授权;
+				HttpRequestMessage 授权请求 = new(HttpMethod.Get, "http://localhost:9200/api/v1/tunnels");
+				授权请求.Headers.Authorization = 授权;
 				上次是starting = false;
-				JsonNode? 所有隧道 = JsonNode.Parse(HTTP客户端.Send(隧道获取).Content.ReadAsStream())["data"]["items"];
+				JsonNode? 返回JSON = JsonNode.Parse(HTTP客户端.Send(授权请求).Content.ReadAsStream())["data"]["items"];
 				string? 隧道名称 = (string?)注册表键.GetValue("隧道名称");
-				if (所有隧道 is not null)
-					foreach (JsonNode? 隧道 in 所有隧道.AsArray())
+				if (返回JSON is not null)
+					foreach (JsonNode? 隧道 in 返回JSON.AsArray())
 						if (隧道["name"].GetValue<string>() == 隧道名称)
 						{
 							switch (隧道["status"].GetValue<string>())
@@ -117,19 +114,23 @@ namespace Cpolar守护服务
 										服务控制器.WaitForStatus(ServiceControllerStatus.Stopped, TimeSpan.FromMinutes(1));
 										服务控制器.Start();
 										服务控制器.WaitForStatus(ServiceControllerStatus.Running, TimeSpan.FromMinutes(1));
-										HttpRequestMessage 隧道启动 = new(HttpMethod.Post, $"http://localhost:9200/api/v1/tunnels/{隧道["id"].GetValue<string>()}/start");
-										隧道启动.Headers.Authorization = 授权;
-										HTTP客户端.Send(隧道启动);
+										授权请求 = new(HttpMethod.Post, $"http://localhost:9200/api/v1/tunnels/{隧道["id"].GetValue<string>()}/start");
+										授权请求.Headers.Authorization = 授权;
+										HTTP客户端.Send(授权请求);
 										_logger.LogInformation(事件ID, "上次启动失败，尝试重启Cpolar服务……");
 									}
+									else
+										_logger.LogInformation(事件ID, "通道启动中……");
 									上次是starting = true;
 									上次定时 = 最小周期;
 									break;
 								default:
 									{
-										HttpRequestMessage 隧道启动 = new(HttpMethod.Post, $"http://localhost:9200/api/v1/tunnels/{隧道["id"].GetValue<string>()}/start");
-										隧道启动.Headers.Authorization = 授权;
-										HTTP客户端.Send(隧道启动);
+										授权请求 = new(HttpMethod.Post, $"http://localhost:9200/api/v1/tunnels/{隧道["id"].GetValue<string>()}/start");
+										授权请求.Headers.Authorization = 授权;
+										返回JSON = JsonNode.Parse(HTTP客户端.Send(授权请求).Content.ReadAsStream());
+										if (返回JSON["code"].GetValue<ushort>() != 20000)
+											throw new Cpolar异常("隧道启动失败，检查TCP地址和登录用户是否正确");
 									}
 									上次定时 = 最小周期;
 									_logger.LogInformation(事件ID, "发现隧道异常，尝试重启……");
@@ -139,11 +140,11 @@ namespace Cpolar守护服务
 						}
 				隧道发送内容["name"] = 隧道名称;
 				隧道发送内容["remote_addr"] = TCP地址;
-				HttpRequestMessage 隧道发送请求 = new(HttpMethod.Post, "http://localhost:9200/api/v1/tunnels") { Content = new StringContent(隧道发送内容.ToJsonString(), JSON类型) };
-				隧道发送请求.Headers.Authorization = 授权;
-				JsonNode? 返回 = JsonNode.Parse(HTTP客户端.Send(隧道发送请求).Content.ReadAsStream());
-				if (返回["code"].GetValue<ushort>() != 20000)
-					throw new Cpolar异常(返回["message"].GetValue<string>());
+				授权请求 = new(HttpMethod.Post, "http://localhost:9200/api/v1/tunnels") { Content = new StringContent(隧道发送内容.ToJsonString(), JSON类型) };
+				授权请求.Headers.Authorization = 授权;
+				返回JSON = JsonNode.Parse(HTTP客户端.Send(授权请求).Content.ReadAsStream());
+				if (返回JSON["code"].GetValue<ushort>() != 20000)
+					throw new Cpolar异常(返回JSON["message"].GetValue<string>());
 				上次定时 = 最小周期;
 				_logger.LogInformation(事件ID, "没有找到指定名称的隧道，尝试新建……");
 			跳过新建隧道:

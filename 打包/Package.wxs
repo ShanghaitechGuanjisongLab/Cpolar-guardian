@@ -3,7 +3,7 @@
 <!-- Define the variables in "$(var.*) expressions" -->
 <?define Name = "Cpolar守护者" ?>
 <?define Manufacturer = "埃博拉酱" ?>
-<?define Version = "1.0.0" ?>
+<?define Version = "1.0.12" ?>
 <?define UpgradeCode = "cc9051b6-9aa6-46f8-94fc-bd4e9bdd586a" ?>
 
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
@@ -63,13 +63,13 @@
 			<ComponentRef Id="UserInterface"/>
 		</Feature>
 		<MediaTemplate EmbedCab="yes"/>
-		<CustomAction Id="LaunchApplication" FileRef="UIExecutable" Return="asyncNoWait" Execute="deferred" ExeCommand="" Impersonate="no"/>
+		<CustomAction Id="LaunchApplication" FileRef="UIExecutable" Return="asyncNoWait" Execute="immediate" ExeCommand="" Impersonate="yes"/>
 		<CustomAction Id="StopService" Execute="deferred" Impersonate="no" Return="ignore" ExeCommand="net stop Cpolar守护服务" Directory="INSTALLFOLDER"/>
 		<CustomAction Id="DeleteService" Execute="deferred" Impersonate="no" Return="ignore" ExeCommand="sc delete Cpolar守护服务" Directory="INSTALLFOLDER"/>
 		<InstallExecuteSequence>
 			<Custom Action="LaunchApplication" Before="InstallFinalize" Condition="NOT Installed OR UPGRADINGPRODUCTCODE"/>
-			<Custom Action="StopService" After="InstallInitialize" Condition="UPGRADINGPRODUCTCODE OR REMOVE=&quot;ALL&quot;"/>
-			<Custom Action="DeleteService" After="StopService" Condition="UPGRADINGPRODUCTCODE OR REMOVE=&quot;ALL&quot;"/>
+			<Custom Action="StopService" After="InstallInitialize"/>
+			<Custom Action="DeleteService" After="StopService" Condition="NOT Installed OR REMOVE=&quot;ALL&quot;"/>
 		</InstallExecuteSequence>
 	</Package>
 </Wix>
