@@ -3,7 +3,8 @@
 <!-- Define the variables in "$(var.*) expressions" -->
 <?define Name = "Cpolar守护者" ?>
 <?define Manufacturer = "埃博拉酱" ?>
-<?define Version = "1.0.12" ?>
+<!--每次生成必须更新版本号否则不会卸载旧版本，并且必须使用重新生成否则可能不会使用新发布的组件-->
+<?define Version = "1.0.34" ?>
 <?define UpgradeCode = "cc9051b6-9aa6-46f8-94fc-bd4e9bdd586a" ?>
 
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
@@ -63,7 +64,8 @@
 			<ComponentRef Id="UserInterface"/>
 		</Feature>
 		<MediaTemplate EmbedCab="yes"/>
-		<CustomAction Id="LaunchApplication" FileRef="UIExecutable" Return="asyncNoWait" Execute="immediate" ExeCommand="" Impersonate="yes"/>
+		<!--Execute必须用commit，用immediate可能会在未安装完毕时运行-->
+		<CustomAction Id="LaunchApplication" FileRef="UIExecutable" Return="asyncNoWait" Execute="commit" ExeCommand="" Impersonate="yes"/>
 		<CustomAction Id="StopService" Execute="deferred" Impersonate="no" Return="ignore" ExeCommand="net stop Cpolar守护服务" Directory="INSTALLFOLDER"/>
 		<CustomAction Id="DeleteService" Execute="deferred" Impersonate="no" Return="ignore" ExeCommand="sc delete Cpolar守护服务" Directory="INSTALLFOLDER"/>
 		<InstallExecuteSequence>

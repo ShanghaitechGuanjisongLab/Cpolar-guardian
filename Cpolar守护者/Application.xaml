@@ -1,8 +1,8 @@
 ﻿<Application x:Class="Application"
 			 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-			 xmlns:local="clr-namespace:Cpolar守护者"
-             StartupUri="MainWindow.xaml">
+			 xmlns:local="clr-namespace:Cpolar守护者">
+    <!--/不能使用StartupUri，会在自动提权前出错导致程序失败-->
 	<Application.Resources>
 		 
 	</Application.Resources>

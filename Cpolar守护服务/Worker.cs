@@ -44,7 +44,7 @@ namespace Cpolar守护服务
 			定时器 = new Timer((state) => _ = 后台守护());
 		}
 		readonly Timer 定时器;
-		JsonObject 隧道发送内容 = new()
+		readonly JsonObject 隧道发送内容 = new()
 		{
 			["proto"] = "tcp",
 			["addr"] = "3389",
