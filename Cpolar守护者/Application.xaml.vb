@@ -6,8 +6,6 @@ Class Application
 
 	Private Sub Application_Startup(sender As Object, e As StartupEventArgs) Handles Me.Startup
 		If Not New WindowsPrincipal(WindowsIdentity.GetCurrent()).IsInRole(WindowsBuiltInRole.Administrator) Then
-			'CustomAction的bug，必须先Sleep才能提权启动进程
-			'Threading.Thread.Sleep(0)
 			Process.Start(New ProcessStartInfo(Environment.ProcessPath) With {
 			.UseShellExecute = True,
 			.Verb = "runas" ' 指定以管理员权限运行

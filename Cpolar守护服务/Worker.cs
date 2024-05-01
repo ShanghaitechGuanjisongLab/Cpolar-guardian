@@ -12,7 +12,7 @@ namespace Cpolar守护服务
 	{
 		private readonly ILogger<Worker> _logger;
 
-		static readonly RegistryKey 注册表键 = Registry.LocalMachine.CreateSubKey("SYSTEM\\CurrentControlSet\\Services\\Cpolar守护服务", true);
+		static readonly RegistryKey 注册表键 = Registry.LocalMachine.CreateSubKey("SOFTWARE\\埃博拉酱\\Cpolar守护服务", true);
 		static readonly TimeSpan 最小周期 = TimeSpan.FromSeconds(30);
 		static readonly ServiceController 服务控制器 = new("cpolar");
 		static readonly HttpClient HTTP客户端 = new();
@@ -78,12 +78,12 @@ namespace Cpolar守护服务
 					case ServiceControllerStatus.Paused:
 					case ServiceControllerStatus.PausePending:
 						服务控制器.Continue();
-						_logger.LogInformation(事件ID,"检测到Cpolar服务未运行，尝试启动……");
+						_logger.LogWarning(事件ID,"检测到Cpolar服务未运行，尝试启动……");
 						break;
 					case ServiceControllerStatus.Stopped:
 					case ServiceControllerStatus.StopPending:
 						服务控制器.Start();
-						_logger.LogInformation(事件ID, "检测到Cpolar服务未运行，尝试启动……");
+						_logger.LogWarning(事件ID, "检测到Cpolar服务未运行，尝试启动……");
 						break;
 				}
 				服务控制器.WaitForStatus(ServiceControllerStatus.Running, 最小周期);
@@ -105,7 +105,7 @@ namespace Cpolar守护服务
 							{
 								case "active":
 									上次定时 *= 2;
-									_logger.LogInformation(事件ID, "例行检查无异常");
+									_logger.LogWarning(事件ID, "例行检查无异常");
 									break;
 								case "starting":
 									if (上次是starting)
@@ -117,10 +117,10 @@ namespace Cpolar守护服务
 										授权请求 = new(HttpMethod.Post, $"http://localhost:9200/api/v1/tunnels/{隧道["id"].GetValue<string>()}/start");
 										授权请求.Headers.Authorization = 授权;
 										HTTP客户端.Send(授权请求);
-										_logger.LogInformation(事件ID, "上次启动失败，尝试重启Cpolar服务……");
+										_logger.LogWarning(事件ID, "上次启动失败，尝试重启Cpolar服务……");
 									}
 									else
-										_logger.LogInformation(事件ID, "通道启动中……");
+										_logger.LogWarning(事件ID, "通道启动中……");
 									上次是starting = true;
 									上次定时 = 最小周期;
 									break;
@@ -130,10 +130,10 @@ namespace Cpolar守护服务
 										授权请求.Headers.Authorization = 授权;
 										返回JSON = JsonNode.Parse(HTTP客户端.Send(授权请求).Content.ReadAsStream());
 										if (返回JSON["code"].GetValue<ushort>() != 20000)
-											throw new Cpolar异常("隧道启动失败，检查TCP地址和登录用户是否正确");
+											throw new Cpolar异常(返回JSON["message"].GetValue<string>());
 									}
 									上次定时 = 最小周期;
-									_logger.LogInformation(事件ID, "发现隧道异常，尝试重启……");
+									_logger.LogWarning(事件ID, "发现隧道异常，尝试重启……");
 									break;
 							}
 							goto 跳过新建隧道;
@@ -146,7 +146,7 @@ namespace Cpolar守护服务
 				if (返回JSON["code"].GetValue<ushort>() != 20000)
 					throw new Cpolar异常(返回JSON["message"].GetValue<string>());
 				上次定时 = 最小周期;
-				_logger.LogInformation(事件ID, "没有找到指定名称的隧道，尝试新建……");
+				_logger.LogWarning(事件ID, "没有找到指定名称的隧道，尝试新建……");
 			跳过新建隧道:
 				定时器.Change(上次定时, 上次定时);
 			}

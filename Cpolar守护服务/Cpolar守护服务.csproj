@@ -10,6 +10,7 @@
     <ApplicationIcon>Icon0.ico</ApplicationIcon>
     <PublishAot>False</PublishAot>
     <PublishTrimmed>False</PublishTrimmed>
+    <FileVersion>1.0.0.3</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
