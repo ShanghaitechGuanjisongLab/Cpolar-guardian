@@ -1,6 +1,5 @@
 ﻿Imports Microsoft.Win32
 Imports System.ServiceProcess
-Imports System.Windows.Interop
 Imports System.Windows.Threading
 Class MainWindow
 	Shared ReadOnly 服务控制器 As New ServiceController("Cpolar守护服务")
@@ -27,14 +26,9 @@ Class MainWindow
 			End Try
 			隧道名称.Text = .GetValue("隧道名称")
 			TCP地址.Text = .GetValue("TCP地址")
-			状态.Text = .GetValue("状态")
 		End With
 		停止守护.IsEnabled = 服务运行中()
-		Dim windowHandle As IntPtr = New WindowInteropHelper(Me).Handle
-		' 尝试获取当前窗口的输入法上下文
-		If ImmGetContext(windowHandle) = IntPtr.Zero Then
-			状态.Text = "获取输入法上下文失败"
-		End If
+		状态.Text = (From 事件 As EventLogEntry In 事件日志.Entries Where 事件.InstanceId = 1 AndAlso 事件.Source = "Cpolar守护服务" Order By 事件.TimeGenerated Descending Select 事件.TimeGenerated & vbCrLf & 事件.Message).FirstOrDefault("")
 	End Sub
 	Private Sub 保存设置() Handles Me.Closing
 		With 注册表键
@@ -47,7 +41,7 @@ Class MainWindow
 
 	Private Sub 事件日志_EntryWritten(sender As Object, e As EntryWrittenEventArgs) Handles 事件日志.EntryWritten
 		If e.Entry.InstanceId = 1 Then
-			Dispatcher.Invoke(Sub() 状态.Text = e.Entry.Message)
+			Dispatcher.Invoke(Sub() 状态.Text = e.Entry.TimeGenerated & vbCrLf & e.Entry.Message)
 		End If
 	End Sub
 
