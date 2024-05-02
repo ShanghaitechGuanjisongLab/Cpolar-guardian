@@ -55,6 +55,9 @@
 							</Shortcut>
 						</File>
 						<RemoveRegistryKey Action="removeOnUninstall" Root="HKLM" Key="SOFTWARE\埃博拉酱\Cpolar守护服务"/>
+
+						<!-- Remove all files from the INSTALLFOLDER on uninstall -->
+						<RemoveFile Name="*.*" On="uninstall" />
 					</Component>
 				</Directory>
 			</Directory>
