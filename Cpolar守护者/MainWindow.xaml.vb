@@ -14,7 +14,7 @@ Class MainWindow
 				Return False
 		End Select
 	End Function
-	Private Sub MainWindow_Loaded(sender As Object, e As RoutedEventArgs) Handles Me.Loaded
+	Private Async Sub MainWindow_Loaded(sender As Object, e As RoutedEventArgs) Handles Me.Loaded
 		Width = 主框架.ActualWidth + 20
 		Height = 主框架.ActualHeight + 40
 		With 注册表键
@@ -28,7 +28,8 @@ Class MainWindow
 			TCP地址.Text = .GetValue("TCP地址")
 		End With
 		停止守护.IsEnabled = 服务运行中()
-		状态.Text = (From 事件 As EventLogEntry In 事件日志.Entries Where 事件.InstanceId = 1 AndAlso 事件.Source = "Cpolar守护服务" Order By 事件.TimeGenerated Descending Select 事件.TimeGenerated & vbCrLf & 事件.Message).FirstOrDefault("")
+		Dim 状态字符串 As String = Await Task.Run(Function() (From 事件 As EventLogEntry In 事件日志.Entries Where 事件.InstanceId = 1 AndAlso 事件.Source = "Cpolar守护服务" Order By 事件.TimeGenerated Descending Select 事件.TimeGenerated & vbCrLf & 事件.Message).FirstOrDefault(""))
+		状态.Text = 状态字符串
 	End Sub
 	Private Sub 保存设置() Handles Me.Closing
 		With 注册表键

@@ -9,7 +9,7 @@
     <Grid x:Name="主框架" HorizontalAlignment="Left" VerticalAlignment="Top" Height="300">
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
-            <ColumnDefinition Width="300"/>
+            <ColumnDefinition Width="500"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -19,7 +19,7 @@
             <RowDefinition/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <TextBlock Text="Email" Grid.Column="0" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        <TextBlock Text="Email（区分大小写）" Grid.Column="0" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center"/>
         <TextBox x:Name="Email" Grid.Column="1" Grid.Row="0"/>
         <TextBlock Text="Cpolar密码" Grid.Column="0" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center"/>
         <PasswordBox x:Name="Cpolar密码" Grid.Column="1" Grid.Row="1" InputScope="Password"/>
