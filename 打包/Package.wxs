@@ -4,7 +4,7 @@
 <?define Name = "Cpolar守护者" ?>
 <?define Manufacturer = "埃博拉酱" ?>
 <!--每次生成必须更新版本号否则不会卸载旧版本，并且必须使用重新生成否则可能不会使用新发布的组件-->
-<?define Version = "1.1.3" ?>
+<?define Version = "1.1.0" ?>
 <?define UpgradeCode = "cc9051b6-9aa6-46f8-94fc-bd4e9bdd586a" ?>
 
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">

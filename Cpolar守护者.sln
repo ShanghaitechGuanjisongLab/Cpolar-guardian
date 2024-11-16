@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.9.34728.123
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{778DAE3C-4631-46EA-AA77-85C1314464D9}") = "Cpolar守护者", "Cpolar守护者\Cpolar守护者.vbproj", "{B3DD8399-BD25-438E-8381-A85BFA7BB839}"
+	ProjectSection(ProjectDependencies) = postProject
+		{966B11D1-CE2D-422A-AB51-2FF1FA381EC4} = {966B11D1-CE2D-422A-AB51-2FF1FA381EC4}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E3FEBB2C-9AE5-4236-96E7-261B9D8740F7}"
 	ProjectSection(SolutionItems) = preProject
@@ -19,6 +22,10 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cpolar守护服务", "Cpolar守护服务\Cpolar守护服务.csproj", "{966B11D1-CE2D-422A-AB51-2FF1FA381EC4}"
 EndProject
 Project("{B7DD6F7E-DEF8-4E67-B5B7-07EF123DB6F0}") = "打包", "打包\打包.wixproj", "{82FE506C-59FE-4F11-9D8A-0594F9A3FB5A}"
+	ProjectSection(ProjectDependencies) = postProject
+		{966B11D1-CE2D-422A-AB51-2FF1FA381EC4} = {966B11D1-CE2D-422A-AB51-2FF1FA381EC4}
+		{B3DD8399-BD25-438E-8381-A85BFA7BB839} = {B3DD8399-BD25-438E-8381-A85BFA7BB839}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
